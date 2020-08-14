@@ -43,7 +43,9 @@ namespace ImageGridCreator
             public CustomException(string message) : base(message) { }
         }
 
-        void Crear(string filepath)
+        Bitmap ImagenCreada;
+
+        Bitmap Crear()
         {
             var inputs = new[] { txtDir, txtAlto, txtAncho, txtSep };
             if (inputs.Any(i => string.IsNullOrWhiteSpace(i.Text)))
@@ -56,7 +58,7 @@ namespace ImageGridCreator
             if (altoIndividual <= 0 || anchoTotal <= 0 || separacion < 0)
                 throw new FormatException();
 
-            var files = Directory.GetFiles(txtDir.Text).Where(f => f != filepath);
+            var files = Directory.GetFiles(txtDir.Text);
 
             if (!files.Any())
                 throw new CustomException("No se encontro ningun archivo en el directorio.");
@@ -72,7 +74,7 @@ namespace ImageGridCreator
             double rows = (double)imgs.Sum(img => img.Data.Width + separacion) / (anchoTotal + separacion);
             int altoTotal = ((int)Math.Ceiling(rows) * (altoIndividual + separacion)) - separacion;
 
-            using var res = new Bitmap(anchoTotal, altoTotal);
+            var res = new Bitmap(anchoTotal, altoTotal);
             using var graphics = Graphics.FromImage(res);
 
             if (!checkBoxFondoTransparente.Checked)
@@ -90,30 +92,33 @@ namespace ImageGridCreator
                 x += img.Data.Width + separacion;
             }
 
-            res.Save(filepath, ImageFormat.Png);
-
             foreach (var img in imgs)
             {
                 img.Data.Dispose();
             }
+
+            return res;
         }
 
         private async void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                var dialog = new SaveFileDialog
+                if (ImagenCreada != null)
                 {
-                    DefaultExt = ".png",
-                };
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
+                    ImagenCreada.Dispose();
+                    ImagenCreada = null;
+                }
 
                 lblCargando.Show();
-                await Task.Run(() => Crear(dialog.FileName));
+                ImagenCreada = await Task.Run(Crear);
                 lblCargando.Hide();
 
-                MessageBox.Show($"Archivo creado con éxito.", "Éxito");
+                pictureBox1.Image = ImagenCreada;
+                pictureBox1.Height = ImagenCreada.Height;
+                pictureBox1.Width = ImagenCreada.Width;
+                panel1.AutoScroll = true;
+                btnGuardar.Enabled = true; 
             }
             catch (Exception ex)
             {
@@ -137,5 +142,28 @@ namespace ImageGridCreator
             if (dialog.ShowDialog() == DialogResult.OK)
                 txtDir.Text = dialog.SelectedPath;
         }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dialog = new SaveFileDialog
+                {
+                    DefaultExt = ".png",
+                };
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                ImagenCreada.Save(dialog.FileName, ImageFormat.Png);
+            }
+            catch (Exception ex)
+            {
+                lblCargando.Hide();
+                MessageBox.Show(ExceptionMessage(ex), "Error");
+            }
+        }
+
+        private void Txt_TextChanged(object sender, EventArgs e) => btnGuardar.Enabled = false;
+        
     }
 }

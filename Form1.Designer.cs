@@ -40,6 +40,11 @@
             this.txtAlto = new System.Windows.Forms.TextBox();
             this.txtSep = new System.Windows.Forms.TextBox();
             this.txtAncho = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnGuardar = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -85,7 +90,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button1.Location = new System.Drawing.Point(513, 260);
+            this.button1.Location = new System.Drawing.Point(364, 260);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(83, 52);
             this.button1.TabIndex = 1;
@@ -99,6 +104,7 @@
             this.txtDir.Name = "txtDir";
             this.txtDir.Size = new System.Drawing.Size(356, 25);
             this.txtDir.TabIndex = 2;
+            this.txtDir.TextChanged += new System.EventHandler(this.Txt_TextChanged);
             // 
             // checkBoxFondoTransparente
             // 
@@ -138,6 +144,7 @@
             this.txtAlto.Name = "txtAlto";
             this.txtAlto.Size = new System.Drawing.Size(100, 25);
             this.txtAlto.TabIndex = 8;
+            this.txtAlto.TextChanged += new System.EventHandler(this.Txt_TextChanged);
             // 
             // txtSep
             // 
@@ -145,6 +152,7 @@
             this.txtSep.Name = "txtSep";
             this.txtSep.Size = new System.Drawing.Size(100, 25);
             this.txtSep.TabIndex = 8;
+            this.txtSep.TextChanged += new System.EventHandler(this.Txt_TextChanged);
             // 
             // txtAncho
             // 
@@ -152,12 +160,42 @@
             this.txtAncho.Name = "txtAncho";
             this.txtAncho.Size = new System.Drawing.Size(100, 25);
             this.txtAncho.TabIndex = 8;
+            this.txtAncho.TextChanged += new System.EventHandler(this.Txt_TextChanged);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(553, 265);
+            this.pictureBox1.TabIndex = 9;
+            this.pictureBox1.TabStop = false;
+            // 
+            // btnGuardar
+            // 
+            this.btnGuardar.Enabled = false;
+            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnGuardar.Location = new System.Drawing.Point(465, 260);
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Size = new System.Drawing.Size(107, 52);
+            this.btnGuardar.TabIndex = 1;
+            this.btnGuardar.Text = "Guardar";
+            this.btnGuardar.UseVisualStyleBackColor = true;
+            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Location = new System.Drawing.Point(19, 328);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(553, 265);
+            this.panel1.TabIndex = 10;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(608, 324);
+            this.ClientSize = new System.Drawing.Size(608, 622);
+            this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.txtAncho);
             this.Controls.Add(this.txtSep);
             this.Controls.Add(this.txtAlto);
@@ -170,8 +208,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblCargando);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "ImageGridCreator";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -191,6 +232,9 @@
         private System.Windows.Forms.TextBox txtAlto;
         private System.Windows.Forms.TextBox txtSep;
         private System.Windows.Forms.TextBox txtAncho;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnGuardar;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
