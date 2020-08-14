@@ -74,6 +74,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "FormVerMas";
             this.Text = "FormVerMas";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formClosed);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

@@ -27,5 +27,10 @@ namespace ImageGridCreator
             Hide();
             FormAnterior.Show();
         }
+
+        private void formClosed(object sender, FormClosedEventArgs e)
+        {
+            FormAnterior.Show();
+        }
     }
 }
