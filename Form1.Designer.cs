@@ -117,6 +117,7 @@
             this.checkBoxFondoTransparente.TabIndex = 4;
             this.checkBoxFondoTransparente.Text = "Fondo Transparente";
             this.checkBoxFondoTransparente.UseVisualStyleBackColor = true;
+            this.checkBoxFondoTransparente.CheckedChanged += new System.EventHandler(this.Txt_TextChanged);
             // 
             // btnExaminar
             // 
