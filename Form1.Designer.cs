@@ -43,6 +43,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnVer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -90,7 +91,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button1.Location = new System.Drawing.Point(364, 260);
+            this.button1.Location = new System.Drawing.Point(290, 260);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(83, 52);
             this.button1.TabIndex = 1;
@@ -166,7 +167,7 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(553, 265);
+            this.pictureBox1.Size = new System.Drawing.Size(485, 265);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             // 
@@ -184,17 +185,33 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(19, 328);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(553, 265);
             this.panel1.TabIndex = 10;
             // 
+            // btnVer
+            // 
+            this.btnVer.Enabled = false;
+            this.btnVer.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnVer.Location = new System.Drawing.Point(379, 260);
+            this.btnVer.Name = "btnVer";
+            this.btnVer.Size = new System.Drawing.Size(80, 52);
+            this.btnVer.TabIndex = 1;
+            this.btnVer.Text = "Ver+";
+            this.btnVer.UseVisualStyleBackColor = true;
+            this.btnVer.Click += new System.EventHandler(this.btnVerMas_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(608, 622);
+            this.Controls.Add(this.btnVer);
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.txtAncho);
             this.Controls.Add(this.txtSep);
@@ -235,6 +252,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnVer;
     }
 }
 

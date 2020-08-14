@@ -19,25 +19,6 @@ namespace ImageGridCreator
             InitializeComponent();
         }
 
-        class Imagen
-        {
-            public Imagen(string path, Image data)
-            {
-                Path = path;
-                Data = data;
-            }
-
-            public string Path { get; set; }
-            public Image Data { get; set; }
-
-            public void ChangeSize(int alto)
-            {
-                var anterior = Data;
-                Data = Data.GetThumbnailImage((alto * Data.Width) / Data.Height, alto, null, IntPtr.Zero);
-                anterior.Dispose();
-            }
-        }
-
         class CustomException : Exception
         {
             public CustomException(string message) : base(message) { }
@@ -71,8 +52,25 @@ namespace ImageGridCreator
                 throw new CustomException($"Las siguientes imagenes no caben en el ancho especificado:\n" +
                     $"{string.Join('\n', overSized.Select(img => Path.GetFileName(img.Path)))}");
 
-            double rows = (double)imgs.Sum(img => img.Data.Width + separacion) / (anchoTotal + separacion);
-            int altoTotal = ((int)Math.Ceiling(rows) * (altoIndividual + separacion)) - separacion;
+            //double rows = (double)imgs.Sum(img => img.Data.Width + separacion) / (anchoTotal + separacion);
+
+            var currentRow = new List<Imagen>();
+            var grid = new List<List<Imagen>> { currentRow };
+
+            int x = 0;
+            foreach (var img in imgs)
+            {
+                if (x + img.Data.Width > anchoTotal)
+                {
+                    x = 0;
+                    currentRow = new List<Imagen>();
+                    grid.Add(currentRow);
+                }
+                currentRow.Add(img);
+                x += img.Data.Width + separacion;
+            }
+
+            int altoTotal = (grid.Count * (altoIndividual + separacion)) - separacion;
 
             var res = new Bitmap(anchoTotal, altoTotal);
             using var graphics = Graphics.FromImage(res);
@@ -80,21 +78,17 @@ namespace ImageGridCreator
             if (!checkBoxFondoTransparente.Checked)
                 graphics.Clear(Color.White);
 
-            int x = 0, y = 0;
-            foreach (var img in imgs)
+            int y = 0;
+            foreach (var row in grid)
             {
-                if (x + img.Data.Width > anchoTotal)
+                x = (anchoTotal - (row.Sum(img => img.Data.Width + separacion) - separacion)) / 2;
+                foreach (var img in row)
                 {
-                    x = 0;
-                    y += altoIndividual + separacion;
+                    graphics.DrawImage(img.Data, new Point(x, y));
+                    x += img.Data.Width + separacion;
+                    img.Data.Dispose();
                 }
-                graphics.DrawImage(img.Data, new Point(x, y));
-                x += img.Data.Width + separacion;
-            }
-
-            foreach (var img in imgs)
-            {
-                img.Data.Dispose();
+                y += altoIndividual + separacion;
             }
 
             return res;
@@ -118,7 +112,7 @@ namespace ImageGridCreator
                 pictureBox1.Height = ImagenCreada.Height;
                 pictureBox1.Width = ImagenCreada.Width;
                 panel1.AutoScroll = true;
-                btnGuardar.Enabled = true; 
+                btnGuardar.Enabled = btnVer.Enabled = true; 
             }
             catch (Exception ex)
             {
@@ -163,7 +157,13 @@ namespace ImageGridCreator
             }
         }
 
-        private void Txt_TextChanged(object sender, EventArgs e) => btnGuardar.Enabled = false;
-        
+        private void Txt_TextChanged(object sender, EventArgs e) => btnGuardar.Enabled = btnVer.Enabled = false;
+
+        private void btnVerMas_Click(object sender, EventArgs e)
+        {
+            var form = new FormVerMas(ImagenCreada, this);
+            Hide();
+            form.Show();
+        }
     }
 }
