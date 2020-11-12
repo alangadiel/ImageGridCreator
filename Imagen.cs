@@ -16,10 +16,15 @@ namespace ImageGridCreator
         public string Path { get; set; }
         public Image Data { get; set; }
 
-        public void ChangeSize(int alto)
+        public void ChangeSize(int lado)
         {
+            double relacionDeAspecto = (double)Data.Height / Data.Width;
+            int area = lado * lado;
+            double nuevoAncho = Math.Sqrt(area / relacionDeAspecto);
+            double nuevoAlto = nuevoAncho * relacionDeAspecto;
+
             var anterior = Data;
-            Data = Data.GetThumbnailImage((alto * Data.Width) / Data.Height, alto, null, IntPtr.Zero);
+            Data = Data.GetThumbnailImage((int)nuevoAncho, (int)nuevoAlto, null, IntPtr.Zero);
             anterior.Dispose();
         }
     }

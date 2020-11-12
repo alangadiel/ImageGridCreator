@@ -32,11 +32,11 @@ namespace ImageGridCreator
             if (inputs.Any(i => string.IsNullOrWhiteSpace(i.Text)))
                 throw new CustomException("Campos incompletos.");
 
-            int altoIndividual = int.Parse(txtAlto.Text),
+            int ladoIndividual = int.Parse(txtAlto.Text),
                anchoTotal = int.Parse(txtAncho.Text),
                separacion = int.Parse(txtSep.Text);
 
-            if (altoIndividual <= 0 || anchoTotal <= 0 || separacion < 0)
+            if (ladoIndividual <= 0 || anchoTotal <= 0 || separacion < 0)
                 throw new FormatException();
 
             var files = Directory.GetFiles(txtDir.Text);
@@ -45,7 +45,7 @@ namespace ImageGridCreator
                 throw new CustomException("No se encontro ningun archivo en el directorio.");
 
             var imgs = files.Select(f => new Imagen(f, Image.FromFile(f))).ToList();
-            imgs.ForEach(img => img.ChangeSize(altoIndividual));
+            imgs.ForEach(img => img.ChangeSize(ladoIndividual));
 
             var overSized = imgs.Where(img => img.Data.Width > anchoTotal);
             if (overSized.Any())
@@ -70,7 +70,8 @@ namespace ImageGridCreator
                 x += img.Data.Width + separacion;
             }
 
-            int altoTotal = (grid.Count * (altoIndividual + separacion)) - separacion;
+            int altoTotal = grid.Sum(row => row.Max(item => item.Data.Height) + separacion) - separacion;
+            //(grid.Count * (ladoIndividual + separacion)) - separacion;
 
             var res = new Bitmap(anchoTotal, altoTotal);
             using var graphics = Graphics.FromImage(res);
@@ -82,13 +83,15 @@ namespace ImageGridCreator
             foreach (var row in grid)
             {
                 x = (anchoTotal - (row.Sum(img => img.Data.Width + separacion) - separacion)) / 2;
+                int rowHeight = row.Max(item => item.Data.Height);
                 foreach (var img in row)
                 {
-                    graphics.DrawImage(img.Data, new Point(x, y));
+                    double yCentrado = y + rowHeight / 2d - img.Data.Height / 2d;
+                    graphics.DrawImage(img.Data, new Point(x, (int)yCentrado));
                     x += img.Data.Width + separacion;
                     img.Data.Dispose();
                 }
-                y += altoIndividual + separacion;
+                y += rowHeight + separacion;
             }
 
             return res;
