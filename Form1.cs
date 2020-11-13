@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -28,70 +29,106 @@ namespace ImageGridCreator
 
         Bitmap Crear()
         {
+            #region validations
             var inputs = new[] { txtDir, txtAlto, txtAncho, txtSep };
             if (inputs.Any(i => string.IsNullOrWhiteSpace(i.Text)))
                 throw new CustomException("Campos incompletos.");
 
-            int ladoIndividual = int.Parse(txtAlto.Text),
-               anchoTotal = int.Parse(txtAncho.Text),
-               separacion = int.Parse(txtSep.Text);
+            int itemSize = int.Parse(txtAlto.Text),
+               totalWith = int.Parse(txtAncho.Text),
+               padding = int.Parse(txtSep.Text);
 
-            if (ladoIndividual <= 0 || anchoTotal <= 0 || separacion < 0)
+            if (itemSize <= 0 || totalWith <= 0 || padding < 0)
                 throw new FormatException();
+            #endregion validations
 
+            //Load files
             var files = Directory.GetFiles(txtDir.Text);
-
             if (!files.Any())
                 throw new CustomException("No se encontro ningun archivo en el directorio.");
 
-            var imgs = files.Select(f => new Imagen(f, Image.FromFile(f))).ToList();
-            imgs.ForEach(img => img.ChangeSize(ladoIndividual));
+            var notImages = files.Where(f => !MyImage.IsImage(f));
+            if(notImages.Any())
+                throw new CustomException($"Los siguientes archivos de la carpeta no son imagenes:\n" +
+                    $"{string.Join('\n', notImages.Select(file => Path.GetFileName(file)))}");
 
-            var overSized = imgs.Where(img => img.Data.Width > anchoTotal);
+            //Convert files to images
+            using var imgs = new DisposableList<MyImage>();
+            foreach (var file in files)
+            {
+                imgs.Add(new MyImage(path: file,
+                                     data: Image.FromFile(file),
+                                     cutBorder: checkBoxRecortarBordes.Checked,
+                                     area: itemSize * itemSize));
+
+                StepProgress(files.Length);
+            }
+
+            //Verify if any image exeeds the total with
+            var overSized = imgs.Where(img => img.Size.Width > totalWith);
             if (overSized.Any())
                 throw new CustomException($"Las siguientes imagenes no caben en el ancho especificado:\n" +
                     $"{string.Join('\n', overSized.Select(img => Path.GetFileName(img.Path)))}");
 
-            //double rows = (double)imgs.Sum(img => img.Data.Width + separacion) / (anchoTotal + separacion);
-
-            var currentRow = new List<Imagen>();
-            var grid = new List<List<Imagen>> { currentRow };
-
+            //Create grid
+            var currentRow = new List<MyImage>();
+            var grid = new List<List<MyImage>> { currentRow };
             int x = 0;
             foreach (var img in imgs)
             {
-                if (x + img.Data.Width > anchoTotal)
+                if (x + img.Size.Width > totalWith)
                 {
                     x = 0;
-                    currentRow = new List<Imagen>();
+                    currentRow = new List<MyImage>();
                     grid.Add(currentRow);
                 }
                 currentRow.Add(img);
-                x += img.Data.Width + separacion;
+                x += img.Size.Width + padding;
             }
 
-            int altoTotal = grid.Sum(row => row.Max(item => item.Data.Height) + separacion) - separacion;
-            //(grid.Count * (ladoIndividual + separacion)) - separacion;
+            int totalHeight = grid.Sum(row => row.Max(item => item.Size.Height) + padding) - padding;
 
-            var res = new Bitmap(anchoTotal, altoTotal);
-            using var graphics = Graphics.FromImage(res);
+            //Create canvas
+            var res = new Bitmap(totalWith, totalHeight);
+
+            using var canvas = Graphics.FromImage(res);
+            canvas.CompositingMode = CompositingMode.SourceOver;
+            canvas.CompositingQuality = CompositingQuality.HighQuality;
+            canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            canvas.SmoothingMode = SmoothingMode.HighQuality;
+            canvas.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             if (!checkBoxFondoTransparente.Checked)
-                graphics.Clear(Color.White);
+                canvas.Clear(Color.White);
 
+            using var wrapMode = new ImageAttributes();
+            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+
+            //Draw final image
             int y = 0;
             foreach (var row in grid)
             {
-                x = (anchoTotal - (row.Sum(img => img.Data.Width + separacion) - separacion)) / 2;
-                int rowHeight = row.Max(item => item.Data.Height);
+                x = (totalWith - (row.Sum(img => img.Size.Width + padding) - padding)) / 2;
+                int rowHeight = row.Max(item => item.Size.Height);
                 foreach (var img in row)
                 {
-                    double yCentrado = y + rowHeight / 2d - img.Data.Height / 2d;
-                    graphics.DrawImage(img.Data, new Point(x, (int)yCentrado));
-                    x += img.Data.Width + separacion;
-                    img.Data.Dispose();
+                    float yCentrado = y + rowHeight / 2f - img.Size.Height / 2f;
+                    int yCentradoInt = Convert.ToInt32(Math.Ceiling(yCentrado));
+
+                    var rect = new Rectangle(x, yCentradoInt, img.Size.Width, img.Size.Height);
+
+                    canvas.DrawImage(image: img.Data,
+                                     destRect: rect,
+                                     srcX: img.Frame.X,
+                                     srcY: img.Frame.Y,
+                                     srcWidth: img.Frame.Width,
+                                     srcHeight: img.Frame.Height,
+                                     srcUnit: GraphicsUnit.Pixel,
+                                     imageAttr: wrapMode);
+
+                    x += img.Size.Width + padding;
                 }
-                y += rowHeight + separacion;
+                y += rowHeight + padding;
             }
 
             return res;
@@ -99,6 +136,9 @@ namespace ImageGridCreator
 
         private async void button1_Click(object sender, EventArgs e)
         {
+            lblCargando.Show();
+            progressBar1.Show();
+            progressBar1.Value = 0;
             try
             {
                 if (ImagenCreada != null)
@@ -107,20 +147,22 @@ namespace ImageGridCreator
                     ImagenCreada = null;
                 }
 
-                lblCargando.Show();
                 ImagenCreada = await Task.Run(Crear);
-                lblCargando.Hide();
 
                 pictureBox1.Image = ImagenCreada;
                 pictureBox1.Height = ImagenCreada.Height;
                 pictureBox1.Width = ImagenCreada.Width;
                 panel1.AutoScroll = true;
-                btnGuardar.Enabled = btnVer.Enabled = true; 
+                btnGuardar.Enabled = btnVer.Enabled = true;
             }
             catch (Exception ex)
             {
-                lblCargando.Hide();
                 MessageBox.Show(ExceptionMessage(ex), "Error");
+            }
+            finally
+            {
+                lblCargando.Hide();
+                progressBar1.Hide();
             }
         }
 
@@ -142,6 +184,7 @@ namespace ImageGridCreator
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
+            lblCargando.Show();
             try
             {
                 var dialog = new SaveFileDialog
@@ -155,8 +198,11 @@ namespace ImageGridCreator
             }
             catch (Exception ex)
             {
-                lblCargando.Hide();
                 MessageBox.Show(ExceptionMessage(ex), "Error");
+            }
+            finally
+            {
+                lblCargando.Hide();
             }
         }
 
@@ -168,5 +214,21 @@ namespace ImageGridCreator
             Hide();
             form.Show();
         }
+
+        private delegate void SafeCallDelegate(int length);
+
+        private void StepProgress(int length)
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(StepProgress);
+                progressBar1.Invoke(d, new object[] { length });
+            }
+            else
+            {
+                progressBar1.Value += 100 / length;
+            }
+        }
+
     }
 }

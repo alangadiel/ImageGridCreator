@@ -44,6 +44,8 @@
             this.btnGuardar = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnVer = new System.Windows.Forms.Button();
+            this.checkBoxRecortarBordes = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -113,9 +115,9 @@
             this.checkBoxFondoTransparente.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.checkBoxFondoTransparente.Location = new System.Drawing.Point(19, 183);
             this.checkBoxFondoTransparente.Name = "checkBoxFondoTransparente";
-            this.checkBoxFondoTransparente.Size = new System.Drawing.Size(215, 34);
+            this.checkBoxFondoTransparente.Size = new System.Drawing.Size(213, 34);
             this.checkBoxFondoTransparente.TabIndex = 4;
-            this.checkBoxFondoTransparente.Text = "Fondo Transparente";
+            this.checkBoxFondoTransparente.Text = "Fondo transparente";
             this.checkBoxFondoTransparente.UseVisualStyleBackColor = true;
             this.checkBoxFondoTransparente.CheckedChanged += new System.EventHandler(this.Txt_TextChanged);
             // 
@@ -133,7 +135,7 @@
             // 
             this.lblCargando.AutoSize = true;
             this.lblCargando.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblCargando.Location = new System.Drawing.Point(19, 229);
+            this.lblCargando.Location = new System.Drawing.Point(19, 237);
             this.lblCargando.Name = "lblCargando";
             this.lblCargando.Size = new System.Drawing.Size(118, 30);
             this.lblCargando.TabIndex = 0;
@@ -171,7 +173,7 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(485, 234);
+            this.pictureBox1.Size = new System.Drawing.Size(485, 346);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             // 
@@ -193,9 +195,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(19, 289);
+            this.panel1.Location = new System.Drawing.Point(19, 339);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(553, 234);
+            this.panel1.Size = new System.Drawing.Size(553, 296);
             this.panel1.TabIndex = 10;
             // 
             // btnVer
@@ -210,11 +212,33 @@
             this.btnVer.UseVisualStyleBackColor = true;
             this.btnVer.Click += new System.EventHandler(this.btnVerMas_Click);
             // 
+            // checkBoxRecortarBordes
+            // 
+            this.checkBoxRecortarBordes.AutoSize = true;
+            this.checkBoxRecortarBordes.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.checkBoxRecortarBordes.Location = new System.Drawing.Point(240, 183);
+            this.checkBoxRecortarBordes.Name = "checkBoxRecortarBordes";
+            this.checkBoxRecortarBordes.Size = new System.Drawing.Size(178, 34);
+            this.checkBoxRecortarBordes.TabIndex = 4;
+            this.checkBoxRecortarBordes.Text = "Recortar bordes";
+            this.checkBoxRecortarBordes.UseVisualStyleBackColor = true;
+            this.checkBoxRecortarBordes.CheckedChanged += new System.EventHandler(this.Txt_TextChanged);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(19, 292);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(553, 23);
+            this.progressBar1.TabIndex = 11;
+            this.progressBar1.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(608, 549);
+            this.ClientSize = new System.Drawing.Size(608, 661);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.checkBoxRecortarBordes);
             this.Controls.Add(this.btnVer);
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.txtAncho);
@@ -257,6 +281,8 @@
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnVer;
+        private System.Windows.Forms.CheckBox checkBoxRecortarBordes;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
