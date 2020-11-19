@@ -30,10 +30,10 @@ namespace ImageGridCreator
                 if (color != null)
                 {
                     var bounds = GetImageBounds(bmp, color.Value);
-                    return new Rectangle(x: bounds[0].X,
-                                         y: bounds[0].Y,
-                                         width: bounds[1].X - bounds[0].X,
-                                         height: bounds[1].Y - bounds[0].Y);
+                    return new Rectangle(x: bounds[0].X == 0 ? 0 : bounds[0].X - 1,
+                                         y: bounds[0].Y == 0 ? 0 : bounds[0].Y - 1,
+                                         width: bounds[1].X - bounds[0].X + 2,
+                                         height: bounds[1].Y - bounds[0].Y + 2);
                 }
             }
 
